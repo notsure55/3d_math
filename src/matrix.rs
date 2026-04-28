@@ -81,6 +81,7 @@ pub trait Orthogonal: SquareMatrix {
 
         println!("{:?}, {:?}", &maybe_identity, &identity);
 
+        // TODO fix partial eq to compare floats properly
         if maybe_identity == identity {
             true
         } else {

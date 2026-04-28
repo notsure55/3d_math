@@ -1,5 +1,6 @@
-use std::ops::Mul;
+use std::ops::{Add, Div, Mul, Neg, Sub};
 
+#[derive(Debug, Copy, Clone)]
 pub struct Vec3 {
     pub x: f32,
     pub y: f32,
@@ -10,11 +11,35 @@ impl Vec3 {
     pub fn new(x: f32, y: f32, z: f32) -> Self {
         Self { x, y, z }
     }
-    pub fn dot_product(&self, other: &Self) -> f32 {
+    pub fn dot_product(&self, other: &Vec3) -> f32 {
         (self * other).sum()
+    }
+    pub fn cross_product(&self, other: &Vec3) -> Vec3 {
+        Vec3::new(
+            self.y * other.z - self.z * other.y,
+            self.z * other.x - self.x * other.z,
+            self.x * other.y - self.y * other.x,
+        )
+    }
+    pub fn triple_product(&self, other: &Vec3, other1: &Vec3) -> f32 {
+        self.dot_product(&other.cross_product(other1))
     }
     pub fn sum(&self) -> f32 {
         self.x + self.y + self.z
+    }
+    pub fn len(&self) -> f32 {
+        (self.x * self.x + self.y * self.y + self.z * self.z).sqrt()
+    }
+    pub fn normalize(&self) -> Vec3 {
+        self / self.len()
+    }
+    pub fn angle(&self, other: &Vec3) -> f32 {
+        let product = self.dot_product(other);
+
+        let magnitude = self.len() * other.len();
+
+        let angle = (product / magnitude).acos();
+        angle.to_degrees()
     }
 }
 
@@ -39,5 +64,73 @@ impl Mul for &Vec3 {
             y: self.y * other.y,
             z: self.z * other.z,
         }
+    }
+}
+
+impl Mul<f32> for Vec3 {
+    type Output = Self;
+
+    fn mul(self, scalar: f32) -> Self::Output {
+        Self {
+            x: self.x * scalar,
+            y: self.y * scalar,
+            z: self.z * scalar,
+        }
+    }
+}
+
+impl Div<f32> for &Vec3 {
+    type Output = Vec3;
+
+    fn div(self, scalar: f32) -> Self::Output {
+        Vec3 {
+            x: self.x / scalar,
+            y: self.y / scalar,
+            z: self.z / scalar,
+        }
+    }
+}
+
+impl Div<f32> for Vec3 {
+    type Output = Vec3;
+
+    fn div(self, scalar: f32) -> Self::Output {
+        Self {
+            x: self.x / scalar,
+            y: self.y / scalar,
+            z: self.z / scalar,
+        }
+    }
+}
+
+impl Add for Vec3 {
+    type Output = Self;
+
+    fn add(self, other: Self) -> Self::Output {
+        Self {
+            x: self.x + other.x,
+            y: self.y + other.y,
+            z: self.z + other.z,
+        }
+    }
+}
+
+impl Sub for Vec3 {
+    type Output = Self;
+
+    fn sub(self, other: Self) -> Self::Output {
+        Self {
+            x: self.x - other.x,
+            y: self.y - other.y,
+            z: self.z - other.z,
+        }
+    }
+}
+
+impl Neg for Vec3 {
+    type Output = Self;
+
+    fn neg(self) -> Self::Output {
+        Vec3::new(-self.x, -self.y, -self.z)
     }
 }
