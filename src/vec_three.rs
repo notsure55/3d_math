@@ -1,5 +1,7 @@
+use crate::vec_two::Vec2;
 use std::ops::{Add, Div, Mul, Neg, Sub};
 
+#[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct Vec3 {
     pub x: f32,
@@ -40,6 +42,31 @@ impl Vec3 {
 
         let angle = (product / magnitude).acos();
         angle.to_degrees()
+    }
+    // for my aimbot in cs2
+    pub fn calc_view_angles(&self, target: &Vec3) -> Option<Vec2> {
+        let delta = target - self;
+
+        let yaw = delta.y.atan2(delta.x).to_degrees();
+
+        let hypot = (delta.x * delta.x + delta.y * delta.y).sqrt();
+        let pitch = hypot.atan2(delta.z).to_degrees() - 90.0;
+
+        if yaw.is_nan() || pitch.is_nan() {
+            return None;
+        }
+
+        let yaw = yaw.clamp(-180.0, 180.0);
+        let pitch = pitch.clamp(-89.0, 89.0);
+
+        Some(Vec2::new(pitch, yaw))
+    }
+    pub fn empty(&self) -> bool {
+        if self.x == 0.0 && self.y == 0.0 && self.z == 0.0 {
+            true
+        } else {
+            false
+        }
     }
 }
 
@@ -120,6 +147,18 @@ impl Sub for Vec3 {
 
     fn sub(self, other: Self) -> Self::Output {
         Self {
+            x: self.x - other.x,
+            y: self.y - other.y,
+            z: self.z - other.z,
+        }
+    }
+}
+
+impl Sub for &Vec3 {
+    type Output = Vec3;
+
+    fn sub(self, other: Self) -> Self::Output {
+        Vec3 {
             x: self.x - other.x,
             y: self.y - other.y,
             z: self.z - other.z,

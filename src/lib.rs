@@ -2,6 +2,7 @@ pub mod matrix;
 pub mod matrix_four;
 pub mod matrix_three;
 pub mod vec_three;
+pub mod vec_two;
 
 // Used to calculate answers
 // https://www.emathhelp.net/linear-algebra-calculator/
