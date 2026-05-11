@@ -26,6 +26,7 @@ pub trait SquareMatrix: Matrix {
             Some(vec)
         }
     }
+
     fn col(&self, index: usize) -> Option<SmallVec<[f32; 4]>> {
         let matrix = self.matrix();
         let matrix_len = matrix.len().isqrt();
@@ -42,6 +43,7 @@ pub trait SquareMatrix: Matrix {
             Some(vec)
         }
     }
+
     fn columns(&self) -> SmallVec<[SmallVec<[f32; 4]>; 4]> {
         let matrix = self.matrix();
         let matrix_len = matrix.len().isqrt();
@@ -54,6 +56,7 @@ pub trait SquareMatrix: Matrix {
 
         columns
     }
+
     fn rows(&self) -> SmallVec<[SmallVec<[f32; 4]>; 4]> {
         let matrix = self.matrix();
         let matrix_len = matrix.len().isqrt();
@@ -66,6 +69,7 @@ pub trait SquareMatrix: Matrix {
 
         rows
     }
+
     fn transpose(&self) -> Self;
 }
 

@@ -1,7 +1,9 @@
 use super::matrix::{Matrix, SquareMatrix};
 use super::matrix_three::Matrix3x3;
-use super::vec_three::Vec3;
 use std::ops::{Div, Mul};
+
+use super::vec_three::Vec3;
+use super::vec_two::Vec2;
 
 #[derive(Debug, Default, PartialEq)]
 pub struct Matrix4x4 {
@@ -12,31 +14,80 @@ impl Mul for Matrix4x4 {
     type Output = Self;
 
     fn mul(self, other: Self) -> Self::Output {
+        let other = other.transpose();
         Matrix4x4 {
             m: [
                 [
-                    self.m[0][0] * other.m[0][0],
-                    self.m[0][1] * other.m[0][1],
-                    self.m[0][2] * other.m[0][2],
-                    self.m[0][3] * other.m[0][3],
+                    self.m[0][0] * other.m[0][0]
+                        + self.m[0][1] * other.m[0][1]
+                        + self.m[0][2] * other.m[0][2]
+                        + self.m[0][3] * other.m[0][3],
+                    self.m[0][0] * other.m[1][0]
+                        + self.m[0][1] * other.m[1][1]
+                        + self.m[0][2] * other.m[1][2]
+                        + self.m[0][3] * other.m[1][3],
+                    self.m[0][0] * other.m[2][0]
+                        + self.m[0][1] * other.m[2][1]
+                        + self.m[0][2] * other.m[2][2]
+                        + self.m[0][3] * other.m[3][3],
+                    self.m[0][0] * other.m[3][0]
+                        + self.m[0][1] * other.m[3][1]
+                        + self.m[0][2] * other.m[3][2]
+                        + self.m[0][3] * other.m[3][3],
                 ],
                 [
-                    self.m[1][0] * other.m[1][0],
-                    self.m[1][1] * other.m[1][1],
-                    self.m[1][2] * other.m[1][2],
-                    self.m[1][3] * other.m[1][3],
+                    self.m[1][0] * other.m[0][0]
+                        + self.m[1][1] * other.m[0][1]
+                        + self.m[1][2] * other.m[0][2]
+                        + self.m[1][3] * other.m[0][3],
+                    self.m[1][0] * other.m[1][0]
+                        + self.m[1][1] * other.m[1][1]
+                        + self.m[1][2] * other.m[1][2]
+                        + self.m[1][3] * other.m[1][3],
+                    self.m[1][0] * other.m[2][0]
+                        + self.m[1][1] * other.m[2][1]
+                        + self.m[1][2] * other.m[2][2]
+                        + self.m[1][3] * other.m[3][3],
+                    self.m[1][0] * other.m[3][0]
+                        + self.m[1][1] * other.m[3][1]
+                        + self.m[1][2] * other.m[3][2]
+                        + self.m[1][3] * other.m[3][3],
                 ],
                 [
-                    self.m[2][0] * other.m[2][0],
-                    self.m[2][1] * other.m[2][1],
-                    self.m[2][2] * other.m[2][2],
-                    self.m[2][3] * other.m[2][3],
+                    self.m[2][0] * other.m[0][0]
+                        + self.m[2][1] * other.m[0][1]
+                        + self.m[2][2] * other.m[0][2]
+                        + self.m[2][3] * other.m[0][3],
+                    self.m[2][0] * other.m[1][0]
+                        + self.m[2][1] * other.m[1][1]
+                        + self.m[2][2] * other.m[1][2]
+                        + self.m[2][3] * other.m[1][3],
+                    self.m[2][0] * other.m[2][0]
+                        + self.m[2][1] * other.m[2][1]
+                        + self.m[2][2] * other.m[2][2]
+                        + self.m[2][3] * other.m[3][3],
+                    self.m[2][0] * other.m[3][0]
+                        + self.m[2][1] * other.m[3][1]
+                        + self.m[2][2] * other.m[3][2]
+                        + self.m[2][3] * other.m[3][3],
                 ],
                 [
-                    self.m[3][0] * other.m[3][0],
-                    self.m[3][1] * other.m[3][1],
-                    self.m[3][2] * other.m[3][2],
-                    self.m[3][3] * other.m[3][3],
+                    self.m[3][0] * other.m[0][0]
+                        + self.m[3][1] * other.m[0][1]
+                        + self.m[3][2] * other.m[0][2]
+                        + self.m[3][3] * other.m[0][3],
+                    self.m[3][0] * other.m[1][0]
+                        + self.m[3][1] * other.m[1][1]
+                        + self.m[3][2] * other.m[1][2]
+                        + self.m[3][3] * other.m[1][3],
+                    self.m[3][0] * other.m[2][0]
+                        + self.m[3][1] * other.m[2][1]
+                        + self.m[3][2] * other.m[2][2]
+                        + self.m[3][3] * other.m[3][3],
+                    self.m[3][0] * other.m[3][0]
+                        + self.m[3][1] * other.m[3][1]
+                        + self.m[3][2] * other.m[3][2]
+                        + self.m[3][3] * other.m[3][3],
                 ],
             ],
         }
@@ -149,30 +200,6 @@ impl Div<f32> for Matrix4x4 {
 }
 
 impl Matrix4x4 {
-    pub fn mult_vector(&self, vector: Vec3) -> Option<Vec3> {
-        let x = self.m[0][0] * vector.x
-            + self.m[0][1] * vector.y
-            + self.m[0][2] * vector.z
-            + self.m[0][3] * 0.0;
-        let y = self.m[1][0] * vector.x
-            + self.m[1][1] * vector.y
-            + self.m[1][2] * vector.z
-            + self.m[1][3] * 0.0;
-        let z = self.m[2][0] * vector.x
-            + self.m[2][1] * vector.y
-            + self.m[2][2] * vector.z
-            + self.m[2][3] * 0.0;
-        let w = self.m[3][0] * vector.x
-            + self.m[3][1] * vector.y
-            + self.m[3][2] * vector.z
-            + self.m[3][3] * 0.0;
-
-        if w < 0.01 {
-            None
-        } else {
-            Some(Vec3 { x, y, z })
-        }
-    }
     pub fn calculate_determinant(&self) -> f32 {
         let mut minors = Vec::with_capacity(4);
 

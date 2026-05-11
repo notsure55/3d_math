@@ -1,3 +1,6 @@
+use crate::matrix::SquareMatrix;
+use crate::matrix_four::Matrix4x4;
+use crate::vec_four::Vec4;
 use crate::vec_two::Vec2;
 use std::ops::{Add, Div, Mul, Neg, Sub};
 
@@ -171,5 +174,25 @@ impl Neg for Vec3 {
 
     fn neg(self) -> Self::Output {
         Vec3::new(-self.x, -self.y, -self.z)
+    }
+}
+
+impl Mul<&Matrix4x4> for Vec3 {
+    type Output = Vec4;
+
+    fn mul(self, matrix: &Matrix4x4) -> Self::Output {
+        let rows: Vec<_> = matrix
+            .transpose()
+            .rows()
+            .iter()
+            .map(|row| Vec4::new(row[0], row[1], row[2], row[3]))
+            .collect();
+
+        Vec4 {
+            x: self.x * rows[0],
+            y: self.y * rows[1],
+            z: self.z * rows[2],
+            w: 1.0 * rows[3],
+        }
     }
 }

@@ -1,4 +1,4 @@
-use std::ops::{Add, Div, Mul, Neg, Sub};
+use std::ops::{Add, AddAssign, Sub};
 
 #[repr(C)]
 #[derive(Debug, Clone, Copy)]
@@ -32,5 +32,23 @@ impl Add for Vec2 {
             x: self.x + other.x,
             y: self.y + other.y,
         }
+    }
+}
+
+impl Into<mint::Vector2<f32>> for Vec2 {
+    fn into(self) -> mint::Vector2<f32> {
+        mint::Vector2 {
+            x: self.x,
+            y: self.y,
+        }
+    }
+}
+
+impl AddAssign for Vec2 {
+    fn add_assign(&mut self, rhs: Self) {
+        *self = Self {
+            x: self.x + rhs.x,
+            y: self.y + rhs.y,
+        };
     }
 }
