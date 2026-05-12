@@ -71,6 +71,37 @@ impl Vec3 {
             false
         }
     }
+    pub fn wts(&self, view_matrix: &Matrix4x4, screen_size: (f32, f32)) -> Option<Vec2> {
+        let z = view_matrix.m[3][0] * self.x
+            + view_matrix.m[3][1] * self.y
+            + view_matrix.m[3][2] * self.z
+            + view_matrix.m[3][3];
+
+        // if off screen
+        if z < 0.001 {
+            return None;
+        }
+
+        let mut out = Vec2::new(0.0, 0.0);
+
+        out.x = screen_size.0 * 0.5;
+        out.y = screen_size.1 * 0.5;
+
+        out.x *= 1.0
+            + (view_matrix.m[0][0] * self.x
+                + view_matrix.m[0][1] * self.y
+                + view_matrix.m[0][2] * self.z
+                + view_matrix.m[0][3])
+                / z;
+        out.y *= 1.0
+            - (view_matrix.m[1][0] * self.x
+                + view_matrix.m[1][1] * self.y
+                + view_matrix.m[1][2] * self.z
+                + view_matrix.m[1][3])
+                / z;
+
+        Some(out)
+    }
 }
 
 impl Mul for Vec3 {
@@ -181,18 +212,25 @@ impl Mul<&Matrix4x4> for Vec3 {
     type Output = Vec4;
 
     fn mul(self, matrix: &Matrix4x4) -> Self::Output {
-        let rows: Vec<_> = matrix
-            .transpose()
-            .rows()
-            .iter()
-            .map(|row| Vec4::new(row[0], row[1], row[2], row[3]))
-            .collect();
+        let matrix = matrix.transpose();
 
         Vec4 {
-            x: self.x * rows[0],
-            y: self.y * rows[1],
-            z: self.z * rows[2],
-            w: 1.0 * rows[3],
+            x: self.x * matrix.m[0][0]
+                + self.y * matrix.m[0][1]
+                + self.z * matrix.m[0][2]
+                + 1.0 * matrix.m[0][3],
+            y: self.x * matrix.m[1][0]
+                + self.y * matrix.m[1][1]
+                + self.z * matrix.m[1][2]
+                + 1.0 * matrix.m[1][3],
+            z: self.x * matrix.m[2][0]
+                + self.y * matrix.m[2][1]
+                + self.z * matrix.m[2][2]
+                + 1.0 * matrix.m[2][3],
+            w: self.x * matrix.m[3][0]
+                + self.y * matrix.m[3][1]
+                + self.z * matrix.m[3][2]
+                + 1.0 * matrix.m[3][3],
         }
     }
 }
